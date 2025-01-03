@@ -21,6 +21,8 @@ setup(
     entry_points={
         'console_scripts': [
             'offboard_control_demo = xtdrone2.offboard_control_demo:main',
+            'multirotor_communication = xtdrone2.communication.multirotor_communication:main',
+            'multirotor_keyboard_control = xtdrone2.keyboard_control.multirotor_keyboard_control:main',
         ],
     },
 )
