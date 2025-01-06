@@ -61,7 +61,7 @@ CTRL-C to quit
 
         # XTDrone2 Interface
         self.cmd_pose_local_ned_publisher = self.create_publisher(Pose, f'/xtdrone2/{vehicle_type}_{vehicle_id}/cmd_pose_local_ned', 10)
-        self.cmd_vel_ned_publisher = self.create_publisher(Twist, f'/xtdrone2/{vehicle_type}_{vehicle_id}/cmd_vel_ned', 10)
+        self.cmd_vel_ned_publisher = self.create_publisher(Twist, f'/xtdrone2/{vehicle_type}_{vehicle_id}/cmd_vel_flu', 10)
         self.cmd_client = self.create_client(XTD2Cmd, f'/xtdrone2/{vehicle_type}_{vehicle_id}/cmd')
 
         # Variables
@@ -143,10 +143,16 @@ CTRL-C to quit
                     self.upward = 0.0
                     self.angular = 0.0
                 else:
-                    pass    
+                    self.get_logger().warn('Invalid key')    
+                    continue
+                
                 future = self.cmd_client.call_async(req)
-                rclpy.spin_until_future_complete(self, future)
-                res = future.result()
+                rclpy.spin_until_future_complete(self, future, timeout_sec=3)
+                if future.done():
+                    self.get_logger().debug(f'Command response: {future.result().success}')
+                else:
+                    self.get_logger().warn('Service call failed %r' % (future.exception(),))
+
 
             # control signal clipping
             self.forward = clip(self.forward, -self.MAX_LINEAR, self.MAX_LINEAR)

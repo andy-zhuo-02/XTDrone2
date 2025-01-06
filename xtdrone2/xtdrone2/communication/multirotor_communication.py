@@ -15,11 +15,13 @@ from rclpy.node import Node
 
 from std_msgs.msg import String
 from geometry_msgs.msg import Pose, Twist
-from px4_msgs.msg import TrajectorySetpoint, OffboardControlMode, VehicleCommand
+from px4_msgs.msg import TrajectorySetpoint, OffboardControlMode, VehicleCommand, VehicleLocalPosition
 from xtd2_msgs.srv import XTD2Cmd
 
 import sys
+import math
 from tf_transformations import euler_from_quaternion
+from rclpy.qos import QoSProfile, qos_profile_sensor_data
 
 class MultirotorCommunication(Node):
     def __init__(self, vehicle_type, vehicle_id):
@@ -29,14 +31,17 @@ class MultirotorCommunication(Node):
 
         self.OFFBOARD_STATE = "DISABLED"
         self.cmd = None
+        self.cur_vehicle_local_position = None
 
         # XTDrone2 Interface
         self.create_subscription(Pose, f'/xtdrone2/{vehicle_type}_{vehicle_id}/cmd_pose_local_ned', self.cmd_pose_local_ned_callback, 10)
         self.create_subscription(Twist, f'/xtdrone2/{vehicle_type}_{vehicle_id}/cmd_vel_ned', self.cmd_vel_ned_callback, 10)
         # self.cmd_accel_sub = self.create_subscription(Twist, f'/xtdrone2/{vehicle_type}_{vehicle_id}/cmd_accel', self.cmd_accel_callback, 10)
+        self.create_subscription(Twist, f'/xtdrone2/{vehicle_type}_{vehicle_id}/cmd_vel_flu', self.cmd_vel_flu_callback, 10)
         self.cmd_server = self.create_service(XTD2Cmd, f'/xtdrone2/{vehicle_type}_{vehicle_id}/cmd', self.cmd_callback)
 
         # DDS Interface
+        self.create_subscription(VehicleLocalPosition, '/fmu/out/vehicle_local_position', self.vehicle_local_position_callback, QoSProfile(depth=10, reliability=qos_profile_sensor_data.reliability))
         self.vehicle_command_publisher = self.create_publisher(VehicleCommand, '/fmu/in/vehicle_command', 10)
         self.offboard_control_mode_pub = self.create_publisher(OffboardControlMode, '/fmu/in/offboard_control_mode', 10)
         self.dds_trajectory_setpoint_pub = self.create_publisher(TrajectorySetpoint, '/fmu/in/trajectory_setpoint', 10)
@@ -51,19 +56,27 @@ class MultirotorCommunication(Node):
         
         # Publish Offboard Control Mode
         msg = OffboardControlMode()
-        msg.position = False
-        msg.velocity = False
-        msg.acceleration = False
-        msg.attitude = False
-        msg.body_rate = False
+        
+        # Publish Command
+        self.cmd.timestamp = self.get_clock_microseconds()
         if self.OFFBOARD_STATE == "POSE_LOCAL_NED":
             msg.position = True
             self.dds_trajectory_setpoint_pub.publish(self.cmd)
         elif self.OFFBOARD_STATE == "VEL_NED":
+            msg.position = False
             msg.velocity = True
             self.dds_trajectory_setpoint_pub.publish(self.cmd)
-        msg.timestamp = self.get_clock_microseconds()
+        elif self.OFFBOARD_STATE == "VEL_FLU":
+            msg.position = False
+            msg.velocity = True
+            self.dds_trajectory_setpoint_pub.publish(self.cmd)
+        
+        msg.timestamp = self.get_clock_microseconds()  
         self.offboard_control_mode_pub.publish(msg)
+    
+    def vehicle_local_position_callback(self, msg):
+        self.cur_vehicle_local_position = msg
+
     
     def get_clock_microseconds(self):
         t_ = self.get_clock().now().seconds_nanoseconds()
@@ -93,12 +106,40 @@ class MultirotorCommunication(Node):
         # Construct TrajectorySetpoint message
         cmd = TrajectorySetpoint()
         cmd.timestamp = self.get_clock_microseconds()
+        cmd.position = [math.nan, math.nan, math.nan]
         cmd.velocity = [msg.linear.x, msg.linear.y, msg.linear.z]
+        cmd.yaw = math.nan
         cmd.yawspeed = msg.angular.z
         self.cmd = cmd
 
     def cmd_accel_callback(self, msg):
         pass
+
+    def cmd_vel_flu_callback(self, msg):
+        """ Let a be heading angle
+        [[cos a , sin a,  0],     [f]   [n]
+         [-sin a, cos a,  0],  *  [l] = [e]
+         [0     , 0    , -1]]     [u]   [d]
+        """
+        if self.OFFBOARD_STATE == "DISABLED":
+            return
+        
+        self.OFFBOARD_STATE = "VEL_FLU"
+        theta = self.cur_vehicle_local_position.heading 
+        # Transform velocity from FLU to NED, msg.linear.xyz is flu, respectively
+        v_n = msg.linear.x * math.cos(theta) + msg.linear.y * math.sin(theta)
+        v_e = msg.linear.x * math.sin(theta) - msg.linear.y * math.cos(theta)
+        v_d = -msg.linear.z
+        # Construct TrajectorySetpoint message
+        cmd = TrajectorySetpoint()
+        cmd.timestamp = self.get_clock_microseconds()
+        cmd.position = [math.nan, math.nan, math.nan]
+        cmd.velocity = [v_n, v_e, v_d]
+        cmd.yaw = math.nan
+        cmd.yawspeed = -msg.angular.z
+        self.cmd = cmd
+        
+    
 
     def cmd_callback(self, request, response):
         command = request.command
@@ -110,10 +151,11 @@ class MultirotorCommunication(Node):
             response.success = True
         elif command == "HOVER":
             self.hover()
-            self.OFFBOARD_STATE = "DISABLED"
+            
             response.success = True
         elif command == "OFFBOARD":
             self.OFFBOARD_STATE = "ENABLED"
+            self.get_logger().info('Offboard command send')
             self.publish_vehicle_command(VehicleCommand.VEHICLE_CMD_DO_SET_MODE, 1, 6)
             response.success = True
         else:
@@ -144,7 +186,8 @@ class MultirotorCommunication(Node):
         self.get_logger().info('Disarm command send')
     
     def hover(self):
-        self.publish_vehicle_command(VehicleCommand.VEHICLE_CMD_DO_PAUSE_CONTINUE, 0.0)
+        # self.OFFBOARD_STATE = "DISABLED"
+        # self.publish_vehicle_command(VehicleCommand.VEHICLE_CMD_DO_PAUSE_CONTINUE, 0.0)
         self.get_logger().info('Hover command send')
 
 def main():
