@@ -121,23 +121,26 @@ CTRL-C to quit
             else:
                 req = XTD2Cmd.Request()
                 if (key == 'r'):  # Return home
-                    pass
+                    req.command = "RTL"
+                    self.get_logger().info('Return home...')
                 elif (key == 't'):  # Arm
                     req.command = "ARM"
-                    print("ARMING...")
+                    self.get_logger().info('Arming...')
                 elif (key == 'y'):  # Disarm
                     req.command = "DISARM"
-                    print("DISARMING...")
+                    self.get_logger().info('Disarming...')
                 elif (key == 'v'):  # Takeoff
-                    pass
+                    req.command = "TAKEOFF"
+                    self.get_logger().info('Taking off...')
                 elif (key == 'n'):  # Land
-                    pass
+                    req.command = "LAND"
+                    self.get_logger().info('Landing...')
                 elif (key == 'b'):  # Offboard
                     req.command = "OFFBOARD"
-                    print("OFFBOARD...")
+                    self.get_logger().info('Switch to offboard mode')
                 elif (key == 's' or 'k'):  # Hover
                     req.command = "HOVER"
-                    print("HOVERING...")
+                    self.get_logger().info('Hovering...')
                     self.forward = 0.0
                     self.leftward = 0.0
                     self.upward = 0.0
