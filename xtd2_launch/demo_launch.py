@@ -6,18 +6,27 @@ def run(cmd, cwd='.'):
 
 
 def demo_launch():
-    world = "aruco"
-    
-    h1 = px4_launch("gz_x500", world=world)
-    h2 = gazebo_launch(world=world)
+    world = "indoor1"
+    # world = "default"
 
+    handles = [
+        # Launch Gazebo simulation
+        gazebo_launch(world=world),
+
+        # Launch PX4 model and sitl
+        px4_launch("gz_x500", world=world, pose=(0, 7.5, 0.5, 0, 0, 0)),
+    ]
+    
     try:
-        while h1.poll() is None or h2.poll() is None:
-            h1.wait()
-            h2.wait()
+        while True:
+            for h in handles:
+                if h.poll() is not None:
+                    break
+            else:
+                h.wait()
     except KeyboardInterrupt:
-        h1.terminate()
-        h2.terminate()
+        for h in handles:
+            h.terminate()
         exit(0)
 
 
