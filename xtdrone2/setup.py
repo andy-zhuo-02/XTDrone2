@@ -1,3 +1,5 @@
+import os
+from glob import glob
 from setuptools import find_packages, setup
 
 package_name = 'xtdrone2'
@@ -10,6 +12,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', '*launch.[pxy][yma]*')))
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -23,6 +26,8 @@ setup(
             'offboard_control_demo = xtdrone2.offboard_control_demo:main',
             'multirotor_communication = xtdrone2.communication.multirotor_communication:main',
             'multirotor_keyboard_control = xtdrone2.keyboard_control.multirotor_keyboard_control:main',
+            'gazebo_launch = xtdrone2.bringup.gazebo_launch:main',
+            'px4_launch = xtdrone2.bringup.px4_launch:main',
         ],
     },
 )
