@@ -1,0 +1,23 @@
+world:
+  name: default
+
+vehicle:
+  - v1:
+    model: gz_x500
+    id: 0
+    pose: [0, 0, 0, 0, 0, 0]
+  
+  - v2:
+    model: gz_x500
+    id: 1
+    pose: [2, 0, 0, 0, 0, 0]
+
+  - v3:
+    model: gz_x500
+    id: 2
+    pose: [4, 0, 0, 0, 0, 0]
+
+  - v4:
+    model: gz_x500
+    id: 3
+    pose: [6, 0, 0, 0, 0, 0]

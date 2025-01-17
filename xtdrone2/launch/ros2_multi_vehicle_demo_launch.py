@@ -16,22 +16,25 @@ def generate_launch_description():
         ],  
     )
 
-    px4_launch = Node(
-        package='xtdrone2',
-        executable='px4_launch',
-        arguments=[
-            '--model', 'gz_x500_depth',
-            '--id', '0',
-            '--world', LaunchConfiguration('world_name'),
-        ],
-        output='screen',
-        shell=True
-    )
-
     ld = LaunchDescription([
         world_name_arg,
         world_launch,
-        px4_launch,
     ])
+
+    for i in range(4):
+        px4_launch = Node(
+            package='xtdrone2',
+            executable='px4_launch',
+            arguments=[
+                '--model', 'gz_x500',
+                '--id', str(i),
+                '--world', LaunchConfiguration('world_name'),
+                '--x', str(i*2),
+                '--y', '0',
+            ],
+            output='screen',
+            shell=True
+        )
+        ld.add_action(px4_launch)
 
     return ld
