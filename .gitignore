@@ -1,0 +1,24 @@
+# Ignore build directories
+build/
+install/
+log/
+
+# Ignore generated files
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.o
+*.lo
+*.la
+*.a
+*.obj
+*.swp
+*.swo
+*~
+
+# Ignore IDE specific files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
