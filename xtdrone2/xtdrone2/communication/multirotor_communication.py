@@ -44,11 +44,11 @@ class MultirotorCommunication(Node):
         self.cmd_server = self.create_service(XTD2Cmd, f'/xtdrone2/{vehicle_type}_{vehicle_id}/cmd', self.cmd_callback)
 
         # DDS Interface
-        self.create_subscription(VehicleLocalPosition, '/fmu/out/vehicle_local_position', self.vehicle_local_position_callback, QoSProfile(depth=10, reliability=qos_profile_sensor_data.reliability))
-        self.create_subscription(VehicleGlobalPosition, '/fmu/out/vehicle_global_position', self.vehicle_global_position_callback, QoSProfile(depth=10, reliability=qos_profile_sensor_data.reliability))
-        self.vehicle_command_publisher = self.create_publisher(VehicleCommand, '/fmu/in/vehicle_command', 10)
-        self.offboard_control_mode_pub = self.create_publisher(OffboardControlMode, '/fmu/in/offboard_control_mode', 10)
-        self.dds_trajectory_setpoint_pub = self.create_publisher(TrajectorySetpoint, '/fmu/in/trajectory_setpoint', 10)
+        self.create_subscription(VehicleLocalPosition, f'/{vehicle_type}_{vehicle_id}/fmu/out/vehicle_local_position', self.vehicle_local_position_callback, QoSProfile(depth=10, reliability=qos_profile_sensor_data.reliability))
+        self.create_subscription(VehicleGlobalPosition, f'/{vehicle_type}_{vehicle_id}/fmu/out/vehicle_global_position', self.vehicle_global_position_callback, QoSProfile(depth=10, reliability=qos_profile_sensor_data.reliability))
+        self.vehicle_command_publisher = self.create_publisher(VehicleCommand, f'/{vehicle_type}_{vehicle_id}/fmu/in/vehicle_command', 10)
+        self.offboard_control_mode_pub = self.create_publisher(OffboardControlMode, f'/{vehicle_type}_{vehicle_id}/fmu/in/offboard_control_mode', 10)
+        self.dds_trajectory_setpoint_pub = self.create_publisher(TrajectorySetpoint, f'/{vehicle_type}_{vehicle_id}/fmu/in/trajectory_setpoint', 10)
 
         self.timer_ = self.create_timer(0.05, self.timer_callback)
 

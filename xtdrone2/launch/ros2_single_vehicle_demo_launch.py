@@ -1,5 +1,5 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, ExecuteProcess
 from launch_ros.actions import Node
 from launch.substitutions import LaunchConfiguration
 
@@ -24,11 +24,6 @@ def generate_launch_description():
     ######################
     # TODO
 
-    ##################
-    # XRCE-DDS Agent #
-    ##################
-    # TODO
-
     ############################
     # Model spawn and PX4 SITL #
     ############################
@@ -36,11 +31,21 @@ def generate_launch_description():
         package='xtdrone2',
         executable='px4_launch',
         arguments=[
-            '--model', 'gz_x500_depth',
+            '--model', 'gz_x500',
             '--id', '0',
             '--world', LaunchConfiguration('world_name'),
         ],
         output='screen',
+        shell=True
+    )
+
+    ##################
+    # XRCE-DDS Agent #
+    ##################
+    xrce_dds_process = ExecuteProcess(
+        cmd=["MicroXRCEAgent udp4 -p 8888"],
+        output='screen',
+        name='microxrceagent',
         shell=True
     )
 
@@ -49,6 +54,7 @@ def generate_launch_description():
         world_name_arg,
         world_launch,
         px4_launch,
+        xrce_dds_process,
     ])
 
     return ld
