@@ -23,6 +23,8 @@ import termios
 import tty
 from numpy import clip
 
+import argparse
+
 
 class MultirotorKeyboardControl(Node):
     MSG = """
@@ -44,10 +46,12 @@ b   : offboard
 s/k : hover 
 CTRL-C to quit
 """
-    def __init__(self, vehicle_type, vehicle_id):
+    def __init__(self, vehicle_type, vehicle_id, namespace=""):
         self.vehicle_type = vehicle_type
         self.vehicle_id = int(vehicle_id)
-        super().__init__(f'{vehicle_type}_{vehicle_id}_keyboard_control')
+        self.namespace = namespace if namespace else f'{vehicle_type}_{vehicle_id}'
+
+        super().__init__(f'{self.namespace}_keyboard_control')
 
         # Parameters
         self.declare_parameter("max_linear_velocity", 20.0)
@@ -60,9 +64,9 @@ CTRL-C to quit
         self.ANGULAR_STEP = self.get_parameter("angular_velocity_step").get_parameter_value().double_value
 
         # XTDrone2 Interface
-        self.cmd_pose_local_ned_publisher = self.create_publisher(Pose, f'/xtdrone2/{vehicle_type}_{vehicle_id}/cmd_pose_local_ned', 10)
-        self.cmd_vel_ned_publisher = self.create_publisher(Twist, f'/xtdrone2/{vehicle_type}_{vehicle_id}/cmd_vel_flu', 10)
-        self.cmd_client = self.create_client(XTD2Cmd, f'/xtdrone2/{vehicle_type}_{vehicle_id}/cmd')
+        self.cmd_pose_local_ned_publisher = self.create_publisher(Pose, f'/xtdrone2/{self.namespace}/cmd_pose_local_ned', 10)
+        self.cmd_vel_ned_publisher = self.create_publisher(Twist, f'/xtdrone2/{self.namespace}/cmd_vel_flu', 10)
+        self.cmd_client = self.create_client(XTD2Cmd, f'/xtdrone2/{self.namespace}/cmd')
 
         # Variables
         self.forward = 0.0
@@ -189,9 +193,16 @@ CTRL-C to quit
 
 def main(args=None):
     rclpy.init(args=args)
-    vehicle_type = sys.argv[1]
-    vehicle_id = sys.argv[2]
-    multirotor_keyboard_control = MultirotorKeyboardControl(vehicle_type, vehicle_id)
+
+    parser = argparse.ArgumentParser(description='XTDrone2 Multirotor Communication Node')
+
+    parser.add_argument('--vehicle_type', type=str, help='Vehicle type', required=True)
+    parser.add_argument('--vehicle_id', type=int, help='Vehicle id, should be unique in same vehicle_type', required=True)
+    parser.add_argument('--namespace', type=str, help='ROS namespace, {{vehicle_type}}_{{vehicle_id}} by default', required=False, default="")
+
+    args, unknown = parser.parse_known_args()
+
+    multirotor_keyboard_control = MultirotorKeyboardControl(args.vehicle_type, args.vehicle_id, args.namespace)
     multirotor_keyboard_control.destroy_node()
     rclpy.shutdown()
 

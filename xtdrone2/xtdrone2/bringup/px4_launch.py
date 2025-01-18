@@ -14,7 +14,7 @@ def main():
     parser.add_argument('--yaw', type=float, help='Yaw', required=False, default=0)
     parser.add_argument('--world', type=str, help='World name', required=False, default="default")
     parser.add_argument('--px4-dir', type=str, help='PX4 directory', required=False, default="~/PX4-Autopilot")
-    parser.add_argument('--namespace', type=str, help='ROS namespace, {{model_id}} by default', required=False, default="")
+    parser.add_argument('--namespace', type=str, help='ROS namespace, {{model}}_{{id}} by default', required=False, default="")
 
     args, unknown = parser.parse_known_args()
 

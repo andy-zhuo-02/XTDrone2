@@ -22,11 +22,16 @@ import math
 from tf_transformations import euler_from_quaternion
 from rclpy.qos import QoSProfile, qos_profile_sensor_data
 
+import argparse
+
 class MultirotorCommunication(Node):
-    def __init__(self, vehicle_type, vehicle_id):
+    def __init__(self, vehicle_type, vehicle_id, namespace=""):
         self.vehicle_type = vehicle_type
         self.vehicle_id = int(vehicle_id)
-        super().__init__(f'{vehicle_type}_{vehicle_id}_communication')
+
+        self.namespace = namespace if namespace else f'{vehicle_type}_{vehicle_id}'
+
+        super().__init__(f'{self.namespace}_communication')
 
         self.OFFBOARD_STATE = "DISABLED"
         self.cmd = None
@@ -36,23 +41,23 @@ class MultirotorCommunication(Node):
         self.init_vehicle_global_position = None
 
         # XTDrone2 Interface
-        self.create_subscription(Pose, f'/xtdrone2/{vehicle_type}_{vehicle_id}/cmd_pose_local_ned', self.cmd_pose_local_ned_callback, 10)
-        self.create_subscription(Pose, f'/xtdrone2/{vehicle_type}_{vehicle_id}/cmd_pose_local_flu', self.cmd_pose_local_flu_callback, 10)
-        self.create_subscription(Twist, f'/xtdrone2/{vehicle_type}_{vehicle_id}/cmd_vel_ned', self.cmd_vel_ned_callback, 10)
+        self.create_subscription(Pose, f'/xtdrone2/{self.namespace}/cmd_pose_local_ned', self.cmd_pose_local_ned_callback, 10)
+        self.create_subscription(Pose, f'/xtdrone2/{self.namespace}/cmd_pose_local_flu', self.cmd_pose_local_flu_callback, 10)
+        self.create_subscription(Twist, f'/xtdrone2/{self.namespace}/cmd_vel_ned', self.cmd_vel_ned_callback, 10)
         # self.cmd_accel_sub = self.create_subscription(Twist, f'/xtdrone2/{vehicle_type}_{vehicle_id}/cmd_accel', self.cmd_accel_callback, 10)
-        self.create_subscription(Twist, f'/xtdrone2/{vehicle_type}_{vehicle_id}/cmd_vel_flu', self.cmd_vel_flu_callback, 10)
-        self.cmd_server = self.create_service(XTD2Cmd, f'/xtdrone2/{vehicle_type}_{vehicle_id}/cmd', self.cmd_callback)
+        self.create_subscription(Twist, f'/xtdrone2/{self.namespace}/cmd_vel_flu', self.cmd_vel_flu_callback, 10)
+        self.cmd_server = self.create_service(XTD2Cmd, f'/xtdrone2/{self.namespace}/cmd', self.cmd_callback)
 
         # DDS Interface
-        self.create_subscription(VehicleLocalPosition, f'/{vehicle_type}_{vehicle_id}/fmu/out/vehicle_local_position', self.vehicle_local_position_callback, QoSProfile(depth=10, reliability=qos_profile_sensor_data.reliability))
-        self.create_subscription(VehicleGlobalPosition, f'/{vehicle_type}_{vehicle_id}/fmu/out/vehicle_global_position', self.vehicle_global_position_callback, QoSProfile(depth=10, reliability=qos_profile_sensor_data.reliability))
-        self.vehicle_command_publisher = self.create_publisher(VehicleCommand, f'/{vehicle_type}_{vehicle_id}/fmu/in/vehicle_command', 10)
-        self.offboard_control_mode_pub = self.create_publisher(OffboardControlMode, f'/{vehicle_type}_{vehicle_id}/fmu/in/offboard_control_mode', 10)
-        self.dds_trajectory_setpoint_pub = self.create_publisher(TrajectorySetpoint, f'/{vehicle_type}_{vehicle_id}/fmu/in/trajectory_setpoint', 10)
+        self.create_subscription(VehicleLocalPosition, f'/{self.namespace}/fmu/out/vehicle_local_position', self.vehicle_local_position_callback, QoSProfile(depth=10, reliability=qos_profile_sensor_data.reliability))
+        self.create_subscription(VehicleGlobalPosition, f'/{self.namespace}/fmu/out/vehicle_global_position', self.vehicle_global_position_callback, QoSProfile(depth=10, reliability=qos_profile_sensor_data.reliability))
+        self.vehicle_command_publisher = self.create_publisher(VehicleCommand, f'/{self.namespace}/fmu/in/vehicle_command', 10)
+        self.offboard_control_mode_pub = self.create_publisher(OffboardControlMode, f'/{self.namespace}/fmu/in/offboard_control_mode', 10)
+        self.dds_trajectory_setpoint_pub = self.create_publisher(TrajectorySetpoint, f'/{self.namespace}/fmu/in/trajectory_setpoint', 10)
 
         self.timer_ = self.create_timer(0.05, self.timer_callback)
 
-        self.get_logger().info(f'{vehicle_type}_{vehicle_id} communication node started')
+        self.get_logger().info(f'{self.namespace} communication node started')
     
     def timer_callback(self):
         if self.OFFBOARD_STATE == "DISABLED":
@@ -265,9 +270,16 @@ class MultirotorCommunication(Node):
 
 def main():
     rclpy.init(args=sys.argv)
-    vehicle_type = sys.argv[1]
-    vehicle_id = sys.argv[2]
-    multirotor_communication = MultirotorCommunication(vehicle_type, vehicle_id)
+
+    parser = argparse.ArgumentParser(description='XTDrone2 Multirotor Communication Node')
+
+    parser.add_argument('--vehicle_type', type=str, help='Vehicle type', required=True)
+    parser.add_argument('--vehicle_id', type=int, help='Vehicle id, should be unique in same vehicle_type', required=True)
+    parser.add_argument('--namespace', type=str, help='ROS namespace, {{vehicle_type}}_{{vehicle_id}} by default', required=False, default="")
+
+    args, unknown = parser.parse_known_args()
+
+    multirotor_communication = MultirotorCommunication(args.vehicle_type, args.vehicle_id, args.namespace)
     rclpy.spin(multirotor_communication)
     multirotor_communication.destroy_node()
     rclpy.shutdown()

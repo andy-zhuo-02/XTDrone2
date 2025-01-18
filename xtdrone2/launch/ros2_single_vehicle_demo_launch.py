@@ -1,7 +1,9 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, ExecuteProcess
+from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription
 from launch_ros.actions import Node
-from launch.substitutions import LaunchConfiguration
+from launch_ros.substitutions import FindPackageShare
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
 def generate_launch_description():
@@ -49,12 +51,27 @@ def generate_launch_description():
         shell=True
     )
 
+    ##########################
+    # XTDrone2 Communication #
+    ##########################
+    xtd2_launch = Node(
+        package='xtdrone2',
+        executable='multirotor_communication',
+        output='screen',
+        shell=True,
+        arguments=[
+            "--vehicle_type", "gz_x500", 
+            "--vehicle_id", "0"
+        ]
+    )
+
     # Add all nodes to the launch description
     ld = LaunchDescription([
         world_name_arg,
         world_launch,
         px4_launch,
         xrce_dds_process,
+        xtd2_launch
     ])
 
     return ld
