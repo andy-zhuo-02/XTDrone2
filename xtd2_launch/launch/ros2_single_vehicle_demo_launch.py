@@ -13,7 +13,7 @@ def generate_launch_description():
     # Gazebo Simulation #
     #####################
     world_launch = Node(
-        package='xtdrone2',
+        package='xtd2_launch',
         executable='gazebo_launch',
         arguments=[
             '--world', LaunchConfiguration('world_name'),
@@ -30,7 +30,7 @@ def generate_launch_description():
     # Model spawn and PX4 SITL #
     ############################
     px4_launch = Node(
-        package='xtdrone2',
+        package='xtd2_launch',
         executable='px4_launch',
         arguments=[
             '--model', 'gz_x500',
@@ -55,7 +55,7 @@ def generate_launch_description():
     # XTDrone2 Communication #
     ##########################
     xtd2_launch = Node(
-        package='xtdrone2',
+        package='xtd2_communication',
         executable='multirotor_communication',
         output='screen',
         shell=True,

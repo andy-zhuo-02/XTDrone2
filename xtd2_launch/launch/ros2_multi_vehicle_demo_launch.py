@@ -8,7 +8,7 @@ def generate_launch_description():
     world_name_arg = DeclareLaunchArgument('world_name', default_value='aruco', description='Name of the world to launch (without .sdf)')
     
     world_launch = Node(
-        package='xtdrone2',
+        package='xtd2_launch',
         executable='gazebo_launch',
         arguments=[
             '--world', LaunchConfiguration('world_name'),
@@ -23,7 +23,7 @@ def generate_launch_description():
 
     for i in range(4):
         px4_launch = Node(
-            package='xtdrone2',
+            package='xtd2_launch',
             executable='px4_launch',
             arguments=[
                 '--model', 'gz_x500',

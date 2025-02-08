@@ -1,6 +1,8 @@
 from setuptools import find_packages, setup
+import os
+from glob import glob
 
-package_name = 'xtdrone2'
+package_name = 'xtd2_launch'
 
 setup(
     name=package_name,
@@ -10,6 +12,8 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', '*launch.[pxy][yma]*'))),
+        (os.path.join('share', package_name, 'launch', 'launch_config'), glob(os.path.join('launch', 'launch_config', '*.yaml'))),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -20,6 +24,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'gazebo_launch = xtd2_launch.utils.gazebo_launch:main',
+            'px4_launch = xtd2_launch.utils.px4_launch:main',
         ],
     },
 )

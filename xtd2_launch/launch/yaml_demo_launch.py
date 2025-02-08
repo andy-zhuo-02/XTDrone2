@@ -24,7 +24,7 @@ def launch_setup(context, *args, **kwargs):
 
     # Gazebo Simulation
     world_launch = Node(
-        package='xtdrone2',
+        package='xtd2_launch',
         executable='gazebo_launch',
         arguments=['--world', config['world']['name']],
     )
@@ -44,7 +44,7 @@ def launch_setup(context, *args, **kwargs):
     for vehicle in config['vehicle']:
         # Spawn vehicle and PX4 SITL
         vehicle_node = Node(
-            package='xtdrone2',
+            package='xtd2_launch',
             executable='px4_launch',
             arguments=[
                 '--model', vehicle['model'],
@@ -55,7 +55,7 @@ def launch_setup(context, *args, **kwargs):
                 '--z', str(vehicle['pose'][2]),
                 '--roll', str(vehicle['pose'][3]),
                 '--pitch', str(vehicle['pose'][4]),
-                '--yaw', str(vehicle['pose'][5]),
+                '--yaw', str(vehicle['pose'][5]), 
             ],
             output='screen',
             shell=False
@@ -64,7 +64,7 @@ def launch_setup(context, *args, **kwargs):
 
         # XTDrone2 Communication
         xtd2_launch = Node(
-            package='xtdrone2',
+            package='xtd2_communication',
             executable='multirotor_communication',
             output='screen',
             shell=True,
@@ -81,7 +81,7 @@ def launch_setup(context, *args, **kwargs):
 
 def generate_launch_description():
     default_config_path = PathJoinSubstitution(
-        [FindPackageShare("xtdrone2"), "launch", "launch_config", "default.yaml"]
+        [FindPackageShare("xtd2_launch"), "launch", "launch_config", "default.yaml"]
     )
 
     config_file_arg = DeclareLaunchArgument(

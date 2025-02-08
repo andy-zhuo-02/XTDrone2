@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'xtdrone2'
+package_name = 'xtd2_communication'
 
 setup(
     name=package_name,
@@ -20,6 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'multirotor_communication = xtd2_communication.multirotor_communication:main',
         ],
     },
 )
