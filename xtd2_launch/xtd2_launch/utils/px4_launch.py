@@ -23,7 +23,13 @@ def main():
 
     mav_sys_id = args.id + 1
 
-    ns = args.namespace if args.namespace else f"{args.model}_{args.id}"
+    if args.namespace:
+        ns = args.namespace
+    else:
+        if args.model.startswith("gz_"):
+            ns = f"{args.model[3:]}_{args.id}"
+        else:
+            ns = f"{args.model}_{args.id}"
 
 
     px4_cmd = f"PX4_UXRCE_DDS_NS={ns} PX4_GZ_WORLD={args.world} PX4_SYS_AUTOSTART={sys_autostart} PX4_SIM_MODEL={args.model} PX4_GZ_MODEL_POSE='{args.x},{args.y},{args.z},{args.roll},{args.pitch},{args.yaw}' PX4_GZ_STANDALONE=1 {args.px4_dir}/build/px4_sitl_default/bin/px4 -d -s {args.px4_dir}/build/px4_sitl_default/etc/init.d-posix/rcS {args.px4_dir}/ROMFS/px4fmu_common -i {args.id} -w {args.px4_dir}/build/px4_sitl_default"

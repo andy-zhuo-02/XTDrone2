@@ -25,11 +25,15 @@ from rclpy.qos import QoSProfile, qos_profile_sensor_data
 import argparse
 
 class MultirotorCommunication(Node):
-    def __init__(self, vehicle_type, vehicle_id, namespace=""):
-        self.vehicle_type = vehicle_type
-        self.vehicle_id = int(vehicle_id)
+    def __init__(self, model, id, namespace=""):
+        
+        if model.startswith("gz_"):  # 删除gz_前缀
+            model = model[3:]
+        self.model = model
 
-        self.namespace = namespace if namespace else f'{vehicle_type}_{vehicle_id}'
+        self.id = int(id)
+
+        self.namespace = namespace if namespace else f'{model}_{id}'
 
         super().__init__(f'{self.namespace}_communication')
 
@@ -44,7 +48,7 @@ class MultirotorCommunication(Node):
         self.create_subscription(Pose, f'/xtdrone2/{self.namespace}/cmd_pose_local_ned', self.cmd_pose_local_ned_callback, 10)
         self.create_subscription(Pose, f'/xtdrone2/{self.namespace}/cmd_pose_local_flu', self.cmd_pose_local_flu_callback, 10)
         self.create_subscription(Twist, f'/xtdrone2/{self.namespace}/cmd_vel_ned', self.cmd_vel_ned_callback, 10)
-        # self.cmd_accel_sub = self.create_subscription(Twist, f'/xtdrone2/{vehicle_type}_{vehicle_id}/cmd_accel', self.cmd_accel_callback, 10)
+        # self.cmd_accel_sub = self.create_subscription(Twist, f'/xtdrone2/{model}_{id}/cmd_accel', self.cmd_accel_callback, 10)
         self.create_subscription(Twist, f'/xtdrone2/{self.namespace}/cmd_vel_flu', self.cmd_vel_flu_callback, 10)
         self.cmd_server = self.create_service(XTD2Cmd, f'/xtdrone2/{self.namespace}/cmd', self.cmd_callback)
 
@@ -273,13 +277,13 @@ def main():
 
     parser = argparse.ArgumentParser(description='XTDrone2 Multirotor Communication Node')
 
-    parser.add_argument('--vehicle_type', type=str, help='Vehicle type', required=True)
-    parser.add_argument('--vehicle_id', type=int, help='Vehicle id, should be unique in same vehicle_type', required=True)
-    parser.add_argument('--namespace', type=str, help='ROS namespace, {{vehicle_type}}_{{vehicle_id}} by default', required=False, default="")
+    parser.add_argument('--model', type=str, help='Vehicle type', required=True)
+    parser.add_argument('--id', type=int, help='Vehicle id, should be unique in same model', required=True)
+    parser.add_argument('--namespace', type=str, help='ROS namespace, {{model}}_{{id}} by default', required=False, default="")
 
     args, unknown = parser.parse_known_args()
 
-    multirotor_communication = MultirotorCommunication(args.vehicle_type, args.vehicle_id, args.namespace)
+    multirotor_communication = MultirotorCommunication(args.model, args.id, args.namespace)
     rclpy.spin(multirotor_communication)
     multirotor_communication.destroy_node()
     rclpy.shutdown()

@@ -26,6 +26,7 @@ setup(
         'console_scripts': [
             'gazebo_launch = xtd2_launch.utils.gazebo_launch:main',
             'px4_launch = xtd2_launch.utils.px4_launch:main',
+            'bridge_launch = xtd2_launch.utils.bridge_launch:main',
         ],
     },
 )

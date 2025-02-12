@@ -2,12 +2,16 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, TextSubstitution
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+
 
 
 def generate_launch_description():
     world_name_arg = DeclareLaunchArgument('world_name', default_value='aruco', description='Name of the world to launch (without .sdf)')
+    model_name_arg = DeclareLaunchArgument('model_name', default_value='gz_x500', description='Name of the model to spawn')
+    id_arg = DeclareLaunchArgument('id', default_value='0', description='ID of the model to spawn')
+    name_space_arg = DeclareLaunchArgument('namespace', default_value='x500_0', description='ROS namespace for the model')
     
     #####################
     # Gazebo Simulation #
@@ -21,26 +25,6 @@ def generate_launch_description():
         ],  
     )
 
-    ######################
-    # Gazebo-ROS2 Bridge #
-    ######################
-    # TODO
-
-    ############################
-    # Model spawn and PX4 SITL #
-    ############################
-    px4_launch = Node(
-        package='xtd2_launch',
-        executable='px4_launch',
-        arguments=[
-            '--model', 'gz_x500',
-            '--id', '0',
-            '--world', LaunchConfiguration('world_name'),
-        ],
-        output='screen',
-        shell=True
-    )
-
     ##################
     # XRCE-DDS Agent #
     ##################
@@ -51,27 +35,34 @@ def generate_launch_description():
         shell=True
     )
 
-    ##########################
-    # XTDrone2 Communication #
-    ##########################
-    xtd2_launch = Node(
-        package='xtd2_communication',
-        executable='multirotor_communication',
-        output='screen',
-        shell=True,
-        arguments=[
-            "--vehicle_type", "gz_x500", 
-            "--vehicle_id", "0"
-        ]
-    )
+    ###################################################################
+    # Spawn vehicles, including Model, PX4 SITL and ROS-Gazebo bridge #
+    ###################################################################
+    spawn = IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([
+                PathJoinSubstitution([
+                    FindPackageShare('xtd2_launch'),
+                    'launch',
+                    'xtd2_vehicle_spawn_launch.py'
+                ])
+            ]),
+            launch_arguments={
+                'world_name': LaunchConfiguration('world_name'),
+                'model': 'gz_x500',
+                'id': 0,
+                'namespace': 'x500_0',
+            }.items()
+        )
 
     # Add all nodes to the launch description
     ld = LaunchDescription([
         world_name_arg,
+        model_name_arg,
+        id_arg,
+        name_space_arg,
         world_launch,
-        px4_launch,
         xrce_dds_process,
-        xtd2_launch
+        spawn
     ])
 
     return ld

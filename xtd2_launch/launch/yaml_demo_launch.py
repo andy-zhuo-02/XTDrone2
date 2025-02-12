@@ -42,7 +42,7 @@ def launch_setup(context, *args, **kwargs):
 
     # Vehicles Setup
     for vehicle in config['vehicle']:
-        # Spawn vehicle and PX4 SITL
+        # Spawn vehicle, PX4 SITL and its ROS-Gazebo bridge
         vehicle_node = Node(
             package='xtd2_launch',
             executable='px4_launch',
@@ -69,8 +69,8 @@ def launch_setup(context, *args, **kwargs):
             output='screen',
             shell=True,
             arguments=[
-                "--vehicle_type", vehicle['model'], 
-                "--vehicle_id", str(vehicle['id']),
+                "--model", vehicle['model'], 
+                "--id", str(vehicle['id']),
             ]
         )
         nodes_to_start.append(xtd2_launch)
