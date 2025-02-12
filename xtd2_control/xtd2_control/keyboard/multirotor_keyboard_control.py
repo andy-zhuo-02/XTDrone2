@@ -46,10 +46,12 @@ b   : offboard
 s/k : hover 
 CTRL-C to quit
 """
-    def __init__(self, vehicle_type, vehicle_id, namespace=""):
-        self.vehicle_type = vehicle_type
-        self.vehicle_id = int(vehicle_id)
-        self.namespace = namespace if namespace else f'{vehicle_type}_{vehicle_id}'
+    def __init__(self, model, id, namespace=""):
+        if model.startswith("gz_"):  # 删除gz_前缀
+            model = model[3:]
+        self.model = model
+        self.id = int(id)
+        self.namespace = namespace if namespace else f'{model}_{id}'
 
         super().__init__(f'{self.namespace}_keyboard_control')
 
@@ -196,13 +198,13 @@ def main(args=None):
 
     parser = argparse.ArgumentParser(description='XTDrone2 Multirotor Communication Node')
 
-    parser.add_argument('--vehicle_type', type=str, help='Vehicle type', required=True)
-    parser.add_argument('--vehicle_id', type=int, help='Vehicle id, should be unique in same vehicle_type', required=True)
-    parser.add_argument('--namespace', type=str, help='ROS namespace, {{vehicle_type}}_{{vehicle_id}} by default', required=False, default="")
+    parser.add_argument('--model', type=str, help='Model name', required=True)
+    parser.add_argument('--id', type=int, help='Vehicle id, should be unique in same model', required=True)
+    parser.add_argument('--namespace', type=str, help='ROS namespace, {{model}}_{{id}} by default', required=False, default="")
 
     args, unknown = parser.parse_known_args()
 
-    multirotor_keyboard_control = MultirotorKeyboardControl(args.vehicle_type, args.vehicle_id, args.namespace)
+    multirotor_keyboard_control = MultirotorKeyboardControl(args.model, args.id, args.namespace)
     multirotor_keyboard_control.destroy_node()
     rclpy.shutdown()
 
