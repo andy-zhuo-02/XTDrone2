@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="airspeed">
+    <link name="airspeed_link">
+      <pose>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.015</mass>
+        <inertia>
+          <ixx>1e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1e-05</iyy>
+          <iyz>0</iyz>
+          <izz>1e-05</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <pose>0 0 0 0 1.57 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.004</radius>
+            <length>0.08</length>
+          </cylinder>
+        </geometry> <!-- Black -->
+        <material>
+          <diffuse>0.0 0.0 0.0</diffuse>
+          <specular>0.5 0.5 0.5</specular>
+        </material>
+      </visual>
+      <sensor name="air_speed" type="air_speed">
+        <pose>0 0 0 0 0 0</pose>
+        <update_rate>5.0</update_rate>
+        <always_on>1</always_on>
+        <visualize>false</visualize>
+      </sensor>
+    </link>
+  </model>
+</sdf>

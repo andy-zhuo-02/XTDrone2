@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="LW20">
+    <link name="lw20_link">
+      <pose>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.02</mass>
+        <inertia>
+          <ixx>0.000004</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000004</iyy>
+          <iyz>0</iyz>
+          <izz>0.000002</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision_base">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.03 0.02 0.043</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://LW20/meshes/LW20.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version='1.9'>
+  <model name='x500_gimbal'>
+    <include merge='true'>
+      <uri>model://x500</uri>
+    </include>
+    <include merge='true'>
+      <uri>model://gimbal</uri>
+      <pose>0 0 0.26 0 0 3.14</pose>
+    </include>
+    <joint name="GimbalAttachJoint" type="fixed">
+      <parent>base_link</parent>
+      <child>cgo3_mount_link</child>
+    </joint>
+  </model>
+</sdf>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version='1.9'>
+  <model name='x500_lidar_2d'>
+    <include merge='true'>
+      <uri>x500</uri>
+    </include>
+    <include merge='true'>
+      <!-- <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Lidar 2d v2</uri> -->
+      <uri>model://lidar_2d_v2</uri>
+      <pose>.12 0 .26 0 0 0</pose>
+    </include>
+    <joint name="LidarJoint" type="fixed">
+      <parent>base_link</parent>
+      <child>link</child>
+      <pose relative_to="base_link">-.1 0 .26 0 0 0</pose>
+    </joint>
+  </model>
+</sdf>

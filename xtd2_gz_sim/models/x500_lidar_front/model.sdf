@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version='1.9'>
+  <model name='x500_lidar_front'>
+    <include merge='true'>
+      <uri>x500</uri>
+    </include>
+    <include merge='true'>
+      <uri>model://LW20</uri>
+      <pose relative_to="base_link">.15 0 .01 0 0 0</pose>
+    </include>
+    <joint name="lidar_model_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>lw20_link</child>
+      <pose relative_to="base_link">-0 0 0 0 0 0</pose>
+    </joint>
+    <link name="lidar_sensor_link">
+      <pose relative_to="base_link">0.3 0 0.01 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>0.00001</ixx>
+          <iyy>0.00001</iyy>
+          <izz>0.00001</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <sensor name='lidar' type='gpu_lidar'>"
+        <pose relative_to="base_link">.15 0 .01 1.57 0 0</pose>
+        <update_rate>50</update_rate>
+        <ray>
+            <scan>
+                <horizontal>
+                    <samples>1</samples>
+                    <resolution>1</resolution>
+                    <min_angle>0</min_angle>
+                    <max_angle>0</max_angle>
+                </horizontal>
+                <vertical>
+                    <samples>1</samples>
+                    <resolution>1</resolution>
+                    <min_angle>0</min_angle>
+                    <max_angle>0</max_angle>
+                </vertical>
+            </scan>
+            <range>
+                <min>0.1</min>
+                <max>100.0</max>
+                <resolution>0.01</resolution>
+            </range>
+        </ray>
+        <always_on>1</always_on>
+        <visualize>true</visualize>
+    </sensor>
+    </link>
+    <joint name="lidar_sensor_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>lidar_sensor_link</child>
+    </joint>
+  </model>
+</sdf>

@@ -1,0 +1,457 @@
+<sdf version="1.8">
+	<model name="rover_ackermann">
+	  <pose>0 0 .04 0 0 0</pose>
+	  <self_collide>false</self_collide>
+	  <static>false</static>
+	  <link name="base_link">
+	    <inertial>
+	      <pose>0 0 0 0 0 0</pose>
+	      <mass>3.0</mass>
+	      <inertia>
+		<ixx>0.0054</ixx>
+		<ixy>0</ixy>
+		<ixz>0</ixz>
+		<iyy>0.0252</iyy>
+		<iyz>0</iyz>
+		<izz>0.0252</izz>
+	      </inertia>
+	    </inertial>
+	    <visual name="rover_ackermann/BaseVisual">
+	      <pose>0 0 -.0115 -0.018 0 -1.5707</pose>
+	      <geometry>
+		<mesh>
+		  <uri>model://rover_ackermann/meshes/MainBody.dae</uri>
+		</mesh>
+	      </geometry>
+	    </visual>
+	    <collision name="rover_ackermann/BaseCollision">
+	      <pose>-0.03 0 .03 0 0 0</pose>
+	      <geometry>
+		<box>
+		  <size>.45 .1 .08</size>
+		</box>
+	      </geometry>
+	    </collision>
+	    <sensor name="imu_sensor" type="imu">
+		<always_on>1</always_on>
+		<update_rate>250</update_rate>
+		<imu>
+			<angular_velocity>
+				<x>
+				<noise type="gaussian">
+					<mean>0</mean>
+					<stddev>0.0003394</stddev>
+					<dynamic_bias_stddev>3.8785e-05</dynamic_bias_stddev>
+					<dynamic_bias_correlation_time>1000</dynamic_bias_correlation_time>
+				</noise>
+				</x>
+				<y>
+				<noise type="gaussian">
+					<mean>0</mean>
+					<stddev>0.0003394</stddev>
+					<dynamic_bias_stddev>3.8785e-05</dynamic_bias_stddev>
+					<dynamic_bias_correlation_time>1000</dynamic_bias_correlation_time>
+				</noise>
+				</y>
+				<z>
+				<noise type="gaussian">
+					<mean>0</mean>
+					<stddev>0.0003394</stddev>
+					<dynamic_bias_stddev>3.8785e-05</dynamic_bias_stddev>
+					<dynamic_bias_correlation_time>1000</dynamic_bias_correlation_time>
+				</noise>
+				</z>
+			</angular_velocity>
+			<linear_acceleration>
+				<x>
+				<noise type="gaussian">
+					<mean>0</mean>
+					<stddev>0.004</stddev>
+					<dynamic_bias_stddev>0.006</dynamic_bias_stddev>
+					<dynamic_bias_correlation_time>300</dynamic_bias_correlation_time>
+				</noise>
+				</x>
+				<y>
+				<noise type="gaussian">
+					<mean>0</mean>
+					<stddev>0.004</stddev>
+					<dynamic_bias_stddev>0.006</dynamic_bias_stddev>
+					<dynamic_bias_correlation_time>300</dynamic_bias_correlation_time>
+				</noise>
+				</y>
+				<z>
+				<noise type="gaussian">
+					<mean>0</mean>
+					<stddev>0.004</stddev>
+					<dynamic_bias_stddev>0.006</dynamic_bias_stddev>
+					<dynamic_bias_correlation_time>300</dynamic_bias_correlation_time>
+				</noise>
+				</z>
+			</linear_acceleration>
+		</imu>
+	</sensor>
+	<sensor name="air_pressure_sensor" type="air_pressure">
+		<always_on>1</always_on>
+		<update_rate>50</update_rate>
+		<air_pressure>
+			<pressure>
+				<noise type="gaussian">
+					<mean>0</mean>
+					<stddev>0.01</stddev>
+				</noise>
+			</pressure>
+		</air_pressure>
+	</sensor>
+	<sensor name="navsat_sensor" type="navsat">
+		<always_on>1</always_on>
+		<update_rate>30</update_rate>
+	</sensor>
+	  </link>
+	  <link name="rover_ackermann/FrontRightWheel">
+	    <pose relative_to="rover_ackermann/FrontRightWheelJoint">0 0 0 0 0 0</pose>
+	    <inertial>
+	      <mass>.05</mass>
+	      <inertia>
+		<ixx>0.00003331</ixx>
+		<ixy>0</ixy>
+		<ixz>0</ixz>
+		<iyy>0.0000204</iyy>
+		<iyz>0</iyz>
+		<izz>0.0000204</izz>
+	      </inertia>
+	    </inertial>
+	    <gravity>true</gravity>
+	    <velocity_decay/>
+	    <visual name="rover_ackermann/FrontRightWheelVisual">
+	      <pose relative_to="rover_ackermann/FrontRightWheelJoint">0 -0.02 0 0 0 3.14159</pose>
+	      <geometry>
+		<mesh>
+		  <uri>model://rover_ackermann/meshes/Wheel.dae</uri>
+		</mesh>
+	      </geometry>
+	    </visual>
+	    <collision name="rover_ackermann/FrontRightWheelCollision">
+	      <pose relative_to="rover_ackermann/FrontRightWheelJoint">0 0 0 -1.5707 0 0</pose>
+	      <geometry>
+		<cylinder>
+		  <length>0.03</length>
+		  <radius>0.06</radius>
+		</cylinder>
+	      </geometry>
+	      <surface>
+		<friction>
+		  <ode>
+			<mu>1.0</mu>
+			<mu2>1.0</mu2>
+			<fdir1>1 0 0</fdir1>
+		  </ode>
+		</friction>
+	      </surface>
+	    </collision>
+	  </link>
+	  <link name="rover_ackermann/FrontRightWheelSteering">
+	    <pose relative_to="servo_1">0 0 0 0 0 0</pose>
+	    <inertial>
+	      <mass>0.005</mass>
+	      <inertia>
+		<ixx>0.0000018</ixx>
+		<iyy>0.0000018</iyy>
+		<izz>0.0000018</izz>
+	      </inertia>
+	    </inertial>
+	  </link>
+	  <link name="rover_ackermann/FrontLeftWheel">
+	    <pose relative_to="rover_ackermann/FrontLeftWheelJoint">0 0 0 0 0 0</pose>
+	    <inertial>
+	      <mass>.05</mass>
+	      <inertia>
+		<ixx>0.00003331</ixx>
+		<ixy>0</ixy>
+		<ixz>0</ixz>
+		<iyy>0.0000204</iyy>
+		<iyz>0</iyz>
+		<izz>0.0000204</izz>
+	      </inertia>
+	    </inertial>
+	    <gravity>true</gravity>
+	    <velocity_decay/>
+	    <visual name="rover_ackermann/FrontLeftWheelVisual">
+	      <pose relative_to="rover_ackermann/FrontLeftWheelJoint">0 -0.02 0 0 0 3.14159</pose>
+	      <geometry>
+		<mesh>
+		  <uri>model://rover_ackermann/meshes/Wheel.dae</uri>
+		</mesh>
+	      </geometry>
+	    </visual>
+	    <collision name="rover_ackermann/FrontLeftWheelCollision">
+	      <pose relative_to="rover_ackermann/FrontLeftWheelJoint">0 0 0 -1.5707 0 0</pose>
+	      <geometry>
+		<cylinder>
+		  <length>0.03</length>
+		  <radius>0.06</radius>
+		</cylinder>
+	      </geometry>
+	      <surface>
+		<friction>
+		  <ode>
+		    <mu>1.0</mu>
+		    <mu2>1.0</mu2>
+		    <fdir1>1 0 0</fdir1>
+		  </ode>
+		</friction>
+	      </surface>
+	    </collision>
+	  </link>
+	  <link name="rover_ackermann/FrontLeftWheelSteering">
+	    <pose relative_to="servo_0 ">0 0 0 0 0 0</pose>
+	    <inertial>
+	      <mass>0.005</mass>
+	      <inertia>
+		<ixx>0.0000018</ixx>
+		<iyy>0.0000018</iyy>
+		<izz>0.0000018</izz>
+	      </inertia>
+	    </inertial>
+	  </link>
+	  <link name="rover_ackermann/RearRightWheel">
+	    <pose relative_to="rover_ackermann/RearRightWheelJoint">0 0 0 0 0 0</pose>
+	    <inertial>
+	      <mass>.05</mass>
+	      <inertia>
+		<ixx>0.00003331</ixx>
+		<ixy>0</ixy>
+		<ixz>0</ixz>
+		<iyy>0.0000204</iyy>
+		<iyz>0</iyz>
+		<izz>0.0000204</izz>
+	      </inertia>
+	    </inertial>
+	    <gravity>true</gravity>
+	    <velocity_decay/>
+	    <visual name="rover_ackermann/RearRightWheelVisual">
+	      <pose relative_to="rover_ackermann/RearRightWheelJoint">0 -0.02 0 0 0 3.14159</pose>
+	      <geometry>
+		<mesh>
+		  <uri>model://rover_ackermann/meshes/Wheel.dae</uri>
+		</mesh>
+	      </geometry>
+	    </visual>
+	    <collision name="rover_ackermann/RearRightWheelCollision">
+	      <pose relative_to="rover_ackermann/RearRightWheelJoint">0 0 0 -1.5707 0 0</pose>
+	      <geometry>
+		<cylinder>
+		  <length>0.03</length>
+		  <radius>0.06</radius>
+		</cylinder>
+	      </geometry>
+	      <surface>
+		<friction>
+		  <ode>
+			<mu>1.0</mu>
+			<mu2>1.0</mu2>
+			<fdir1>1 0 0</fdir1>
+		  </ode>
+		</friction>
+	      </surface>
+	    </collision>
+	  </link>
+	  <link name="rover_ackermann/RearLeftWheel">
+	    <pose relative_to="rover_ackermann/RearLeftWheelJoint">0 0 0 0 0 0</pose>
+	    <inertial>
+	      <mass>.05</mass>
+	      <inertia>
+		<ixx>0.00003331</ixx>
+		<ixy>0</ixy>
+		<ixz>0</ixz>
+		<iyy>0.0000204</iyy>
+		<iyz>0</iyz>
+		<izz>0.0000204</izz>
+	      </inertia>
+	    </inertial>
+	    <gravity>true</gravity>
+	    <velocity_decay/>
+	    <visual name="rover_ackermann/RearLeftWheelVisual">
+	      <pose relative_to="rover_ackermann/RearLeftWheelJoint">0 -0.02 0 0 0 3.14159</pose>
+	      <geometry>
+		<mesh>
+		  <uri>model://rover_ackermann/meshes/Wheel.dae</uri>
+		</mesh>
+	      </geometry>
+	    </visual>
+	    <collision name="rover_ackermann/RearLeftWheelCollision">
+	       <pose relative_to="rover_ackermann/RearLeftWheelJoint">0 0 0 -1.5707 0 0</pose>
+	      <geometry>
+		<cylinder>
+		  <length>0.03</length>
+		  <radius>0.06</radius>
+		</cylinder>
+	      </geometry>
+	      <surface>
+		<friction>
+		  <ode>
+			<mu>1.0</mu>
+			<mu2>1.0</mu2>
+			<fdir1>1 0 0</fdir1>
+		  </ode>
+		</friction>
+	      </surface>
+	    </collision>
+	  </link>
+	  <joint name="servo_1" type="revolute">
+	    <parent>base_link</parent>
+	    <child>rover_ackermann/FrontRightWheelSteering</child>
+	    <pose relative_to="base_link">.120 -.1 0 0 0 0</pose>
+	    <axis>
+	      <xyz>0 0 1</xyz>
+	      <limit>
+		<lower>-0.5236</lower>
+		<upper>0.5236</upper>
+		<velocity>1.0</velocity>
+		<effort>25</effort>
+	      </limit>
+	      <use_parent_model_frame>1</use_parent_model_frame>
+	    </axis>
+	  </joint>
+	  <joint name="servo_0 " type="revolute">
+	    <parent>base_link</parent>
+	    <child>rover_ackermann/FrontLeftWheelSteering</child>
+	    <pose relative_to="base_link">.120 .1 0 0 0 0</pose>
+	    <axis>
+	      <xyz>0 0 1</xyz>
+	      <limit>
+		<lower>-0.5236</lower>
+		<upper>0.5236</upper>
+		<velocity>1.0</velocity>
+		<effort>25</effort>
+	      </limit>
+	      <use_parent_model_frame>1</use_parent_model_frame>
+	    </axis>
+	  </joint>
+	  <joint name="rover_ackermann/FrontRightWheelJoint" type="revolute">
+	    <parent>rover_ackermann/FrontRightWheelSteering</parent>
+	    <child>rover_ackermann/FrontRightWheel</child>
+	    <pose relative_to="servo_1">0 0 0 0 0 0</pose>
+	    <axis>
+	      <xyz>0 1 0</xyz>
+	      <limit>
+		<lower>-1.79769e+308</lower>
+		<upper>1.79769e+308</upper>
+		<velocity>50.0</velocity>
+	      </limit>
+	      <dynamics>
+		<spring_reference>0</spring_reference>
+		<spring_stiffness>0</spring_stiffness>
+	      </dynamics>
+	      <use_parent_model_frame>1</use_parent_model_frame>
+	    </axis>
+	  </joint>
+	  <joint name="rover_ackermann/FrontLeftWheelJoint" type="revolute">
+	    <parent>rover_ackermann/FrontLeftWheelSteering</parent>
+	    <child>rover_ackermann/FrontLeftWheel</child>
+	    <pose relative_to="servo_0 ">0 0 0 0 0 0</pose>
+	    <axis>
+	      <xyz>0 1 0</xyz>
+	      <limit>
+		<lower>-1.79769e+308</lower>
+		<upper>1.79769e+308</upper>
+		<velocity>50.0</velocity>
+	      </limit>
+	      <dynamics>
+		<spring_reference>0</spring_reference>
+		<spring_stiffness>0</spring_stiffness>
+	      </dynamics>
+	      <use_parent_model_frame>1</use_parent_model_frame>
+	    </axis>
+	  </joint>
+	  <joint name="rover_ackermann/RearRightWheelJoint" type="revolute">
+	    <parent>base_link</parent>
+	    <child>rover_ackermann/RearRightWheel</child>
+	    <pose relative_to="base_link">-0.192 -.1 0 0 0 0</pose>
+	    <axis>
+	      <xyz>0 1 0</xyz>
+	      <limit>
+		<lower>-1.79769e+308</lower>
+		<upper>1.79769e+308</upper>
+		<velocity>50.0</velocity>
+	      </limit>
+	      <dynamics>
+		<spring_reference>0</spring_reference>
+		<spring_stiffness>0</spring_stiffness>
+	      </dynamics>
+	      <use_parent_model_frame>1</use_parent_model_frame>
+	    </axis>
+	  </joint>
+	  <joint name="rover_ackermann/RearLeftWheelJoint" type="revolute">
+	    <parent>base_link</parent>
+	    <child>rover_ackermann/RearLeftWheel</child>
+	    <pose relative_to="base_link">-0.192 .1 0 0 0 0</pose>
+	    <axis>
+	      <xyz>0 1 0</xyz>
+	      <limit>
+		<lower>-1.79769e+308</lower>
+		<upper>1.79769e+308</upper>
+		<velocity>50.0</velocity>
+	      </limit>
+	      <dynamics>
+		<spring_reference>0</spring_reference>
+		<spring_stiffness>0</spring_stiffness>
+	      </dynamics>
+	      <use_parent_model_frame>1</use_parent_model_frame>
+	    </axis>
+	  </joint>
+	  <plugin filename="gz-sim-joint-controller-system" name="gz::sim::systems::JointController">
+		<joint_name>rover_ackermann/FrontLeftWheelJoint</joint_name>
+	        <sub_topic>command/motor_speed</sub_topic>
+	        <use_actuator_msg>true</use_actuator_msg>
+	        <actuator_number>0</actuator_number>
+		<p_gain>10.0</p_gain>
+	  </plugin>
+	  <plugin filename="gz-sim-joint-controller-system" name="gz::sim::systems::JointController">
+	        <joint_name>rover_ackermann/FrontRightWheelJoint</joint_name>
+	        <sub_topic>command/motor_speed</sub_topic>
+		<use_actuator_msg>true</use_actuator_msg>
+	        <actuator_number>0</actuator_number>
+	        <p_gain>10.0</p_gain>
+	  </plugin>
+	  <plugin filename="gz-sim-joint-controller-system" name="gz::sim::systems::JointController">
+		<joint_name>rover_ackermann/RearRightWheelJoint</joint_name>
+		<sub_topic>command/motor_speed</sub_topic>
+		<use_actuator_msg>true</use_actuator_msg>
+		<actuator_number>0</actuator_number>
+		<p_gain>10.0</p_gain>
+	  </plugin>
+	  <plugin filename="gz-sim-joint-controller-system" name="gz::sim::systems::JointController">
+		<joint_name>rover_ackermann/RearLeftWheelJoint</joint_name>
+		<sub_topic>command/motor_speed</sub_topic>
+		<use_actuator_msg>true</use_actuator_msg>
+		<actuator_number>0</actuator_number>
+		<p_gain>10.0</p_gain>
+	  </plugin>
+		<plugin
+		filename="gz-sim-joint-state-publisher-system"
+		name="gz::sim::systems::JointStatePublisher">
+			<joint_name>rover_ackermann/FrontLeftWheelJoint</joint_name>
+			<joint_name>rover_ackermann/FrontRightWheelJoint</joint_name>
+			<joint_name>rover_ackermann/RearLeftWheelJoint</joint_name>
+			<joint_name>rover_ackermann/RearLeftWheelJoint</joint_name>
+			<joint_name>servo_0</joint_name>
+			<joint_name>servo_1</joint_name>
+	</plugin>
+	<plugin
+		filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+		<joint_name>servo_0</joint_name>
+		<sub_topic>servo_0</sub_topic>
+		<p_gain>10</p_gain>
+		<i_gain>0</i_gain>
+		<d_gain>0</d_gain>
+	</plugin>
+	<plugin
+		filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+		<joint_name>servo_1</joint_name>
+		<sub_topic>servo_0</sub_topic>
+		<p_gain>10</p_gain>
+		<i_gain>0</i_gain>
+		<d_gain>0</d_gain>
+	</plugin>
+	</model>
+      </sdf>

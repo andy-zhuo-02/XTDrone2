@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version='1.9'>
+  <model name='x500_mono_cam_down'>
+    <self_collide>false</self_collide>
+    <include merge='true'>
+      <uri>x500</uri>
+    </include>
+    <include merge='true'>
+      <uri>model://mono_cam</uri>
+      <pose>0 0 .10 0 1.5707 0</pose>
+    </include>
+    <joint name="CameraJoint" type="fixed">
+      <parent>base_link</parent>
+      <child>mono_cam/base_link</child>
+      <pose relative_to="base_link">0 0 0 0 1.5707 0</pose>
+    </joint>
+  </model>
+</sdf>
