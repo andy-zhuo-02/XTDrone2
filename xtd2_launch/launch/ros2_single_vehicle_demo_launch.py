@@ -6,7 +6,6 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, Text
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
-
 def generate_launch_description():
     world_name_arg = DeclareLaunchArgument('world_name', default_value='aruco', description='Name of the world to launch (without .sdf)')
     model_name_arg = DeclareLaunchArgument('model_name', default_value='gz_x500', description='Name of the model to spawn')
@@ -16,13 +15,17 @@ def generate_launch_description():
     #####################
     # Gazebo Simulation #
     #####################
-    world_launch = Node(
-        package='xtd2_launch',
-        executable='gazebo_launch',
-        arguments=[
-            '--world', LaunchConfiguration('world_name'),
-            # '--model-store', LaunchConfiguration('resource_store_path')
-        ],  
+    world_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                FindPackageShare("xtd2_launch"),
+                "launch",
+                "gz_launch.py"
+            ])
+        ]),
+        launch_arguments={
+            "world": LaunchConfiguration('world_name'),
+        }.items()
     )
 
     ##################
@@ -49,7 +52,7 @@ def generate_launch_description():
             launch_arguments={
                 'world_name': LaunchConfiguration('world_name'),
                 'model': 'gz_x500',
-                'id': 0,
+                'id': '0',
                 'namespace': 'x500_0',
             }.items()
         )

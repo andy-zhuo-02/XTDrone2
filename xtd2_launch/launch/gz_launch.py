@@ -8,7 +8,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
     pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
-    pkg_xtdrone2_gz_sim = get_package_share_directory('xtdrone2')
+    pkg_xtdrone2_gz_sim = get_package_share_directory('xtd2_gz_sim')
     gz_launch_path = PathJoinSubstitution([pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py'])
     gz_model_path = PathJoinSubstitution([pkg_xtdrone2_gz_sim, 'models'])
 

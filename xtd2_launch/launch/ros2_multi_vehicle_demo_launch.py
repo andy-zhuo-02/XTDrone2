@@ -6,20 +6,20 @@ from launch_ros.substitutions import FindPackageShare
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, TextSubstitution
 
 
-
-
 def generate_launch_description():
     world_name_arg = DeclareLaunchArgument('world_name', default_value='aruco', description='Name of the world to launch (without .sdf)')
     
-
-    # Gazebo Simulation 
-    world_launch = Node(
-        package='xtd2_launch',
-        executable='gazebo_launch',
-        arguments=[
-            '--world', LaunchConfiguration('world_name'),
-            # '--model-store', LaunchConfiguration('resource_store_path')
-        ],  
+    world_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                FindPackageShare("xtd2_launch"),
+                "launch",
+                "gz_launch.py"
+            ])
+        ]),
+        launch_arguments={
+            "world": LaunchConfiguration('world_name'),
+        }.items()
     )
 
     # XRCE-DDS Agent 
