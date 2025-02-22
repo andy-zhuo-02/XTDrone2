@@ -14,7 +14,7 @@ from rclpy.node import Node
 
 from std_msgs.msg import String
 from geometry_msgs.msg import Pose, Twist
-from px4_msgs.msg import TrajectorySetpoint, OffboardControlMode, VehicleCommand, VehicleLocalPosition, VehicleGlobalPosition
+from px4_msgs.msg import TrajectorySetpoint, OffboardControlMode, VehicleCommand, VehicleLocalPosition, VehicleGlobalPosition, VehicleAttitudeSetpoint
 from xtd2_msgs.srv import XTD2Cmd
 
 import sys
@@ -45,11 +45,13 @@ class MultirotorCommunication(Node):
         self.init_vehicle_global_position = None
 
         # XTDrone2 Interface
-        self.create_subscription(Pose, f'/xtdrone2/{self.namespace}/cmd_pose_local_ned', self.cmd_pose_local_ned_callback, 10)
-        self.create_subscription(Pose, f'/xtdrone2/{self.namespace}/cmd_pose_local_flu', self.cmd_pose_local_flu_callback, 10)
-        self.create_subscription(Twist, f'/xtdrone2/{self.namespace}/cmd_vel_ned', self.cmd_vel_ned_callback, 10)
-        # self.cmd_accel_sub = self.create_subscription(Twist, f'/xtdrone2/{model}_{id}/cmd_accel', self.cmd_accel_callback, 10)
-        self.create_subscription(Twist, f'/xtdrone2/{self.namespace}/cmd_vel_flu', self.cmd_vel_flu_callback, 10)
+        self.create_subscription(Pose, f'/xtdrone2/{self.namespace}/cmd_pose_local_ned', self.cmd_pose_local_ned_callback, 10)  # geometry_msgs/Pose
+        self.create_subscription(Pose, f'/xtdrone2/{self.namespace}/cmd_pose_local_flu', self.cmd_pose_local_flu_callback, 10)  # geometry_msgs/Pose
+        self.create_subscription(Twist, f'/xtdrone2/{self.namespace}/cmd_vel_ned', self.cmd_vel_ned_callback, 10)  # geometry_msgs/Twist
+        self.create_subscription(Twist, f'/xtdrone2/{self.namespace}/cmd_vel_flu', self.cmd_vel_flu_callback, 10)  # geometry_msgs/Twist
+        self.create_subscription(Twist, f'/xtdrone2/{self.namespace}/cmd_accel_ned', self.cmd_accel_ned_callback, 10)  # geometry_msgs/Twist
+        self.create_subscription(Twist, f'/xtdrone2/{self.namespace}/cmd_accel_flu', self.cmd_accel_flu_callback, 10)  # geometry_msgs/Twist
+        self.create_subscription(Twist, f'/xtdrone2/{self.namespace}/cmd_attitude_flu', self.cmd_attitude_flu_callback, 10)  # geometry_msgs/Pose
         self.cmd_server = self.create_service(XTD2Cmd, f'/xtdrone2/{self.namespace}/cmd', self.cmd_callback)
 
         # DDS Interface
@@ -58,6 +60,7 @@ class MultirotorCommunication(Node):
         self.vehicle_command_publisher = self.create_publisher(VehicleCommand, f'/{self.namespace}/fmu/in/vehicle_command', 10)
         self.offboard_control_mode_pub = self.create_publisher(OffboardControlMode, f'/{self.namespace}/fmu/in/offboard_control_mode', 10)
         self.dds_trajectory_setpoint_pub = self.create_publisher(TrajectorySetpoint, f'/{self.namespace}/fmu/in/trajectory_setpoint', 10)
+        self.dds_vehicle_attitude_setpoint_pub = self.create_publisher(VehicleAttitudeSetpoint, f'/{self.namespace}/fmu/in/vehicle_attitude_setpoint', 10)
 
         self.timer_ = self.create_timer(0.05, self.timer_callback)
 
@@ -72,20 +75,22 @@ class MultirotorCommunication(Node):
         
         # Publish Command
         self.cmd.timestamp = self.get_clock_microseconds()
-        if self.OFFBOARD_STATE == "POSE_LOCAL_NED":
+        if self.OFFBOARD_STATE in ["POSE_LOCAL_NED", "POSE_LOCAL_FLU"]:
             msg.position = True
             self.dds_trajectory_setpoint_pub.publish(self.cmd)
-        elif self.OFFBOARD_STATE == "POSE_LOCAL_FLU":
-            msg.position = True
-            self.dds_trajectory_setpoint_pub.publish(self.cmd)
-        elif self.OFFBOARD_STATE == "VEL_NED":
-            msg.position = False
+
+        elif self.OFFBOARD_STATE in ["VEL_NED", "VEL_FLU"]:
             msg.velocity = True
             self.dds_trajectory_setpoint_pub.publish(self.cmd)
-        elif self.OFFBOARD_STATE == "VEL_FLU":
-            msg.position = False
-            msg.velocity = True
+
+        elif self.OFFBOARD_STATE in ["ACCEL_NED", "ACCEL_FLU"]:
+            msg.acceleration = True
             self.dds_trajectory_setpoint_pub.publish(self.cmd)
+        
+        elif self.OFFBOARD_STATE == "ATTITUDE_FLU":
+            msg.attitude = True
+            self.dds_vehicle_attitude_setpoint_pub.publish(self.cmd)
+        
         
         msg.timestamp = self.get_clock_microseconds()  
         self.offboard_control_mode_pub.publish(msg)
@@ -181,8 +186,49 @@ class MultirotorCommunication(Node):
         cmd.yawspeed = -msg.angular.z
         self.cmd = cmd
         
-    def cmd_accel_callback(self, msg):
-        pass
+    def cmd_accel_ned_callback(self, msg):
+        if self.OFFBOARD_STATE == "DISABLED":
+            return
+        
+        self.OFFBOARD_STATE == "ACCEL_NED"
+        cmd = TrajectorySetpoint()
+        cmd.timestamp = self.get_clock_microseconds()
+        cmd.position = [math.nan, math.nan, math.nan]
+        cmd.velocity = [math.nan, math.nan, math.nan]
+        cmd.acceleration = [msg.linear.x, msg.linear.y, msg.linear.z]
+        # How about yaw?
+        self.cmd = cmd
+        
+    def cmd_accel_flu_callback(self, msg):
+        if self.OFFBOARD_STATE == "DISABLED":
+            return
+
+        self.OFFBOARD_STATE = "ACCEL_FLU"
+        theta = self.cur_vehicle_local_position.heading
+        # Transform acceleration from FLU to NED, msg.linear.xyz is flu, respectively
+        a_n = msg.linear.x * math.cos(theta) + msg.linear.y * math.sin(theta)
+        a_e = msg.linear.x * math.sin(theta) - msg.linear.y * math.cos(theta)
+        a_d = -msg.linear.z
+        # Construct TrajectorySetpoint message
+        cmd = TrajectorySetpoint()
+        cmd.timestamp = self.get_clock_microseconds()
+        cmd.position = [math.nan, math.nan, math.nan]
+        cmd.velocity = [math.nan, math.nan, math.nan]
+        cmd.acceleration = [a_n, a_e, a_d]
+        # How about yaw
+        self.cmd = cmd
+    
+    def cmd_attitude_flu_callback(self, msg):
+        if self.OFFBOARD_STATE == "DISABLED":
+            return
+        
+        self.OFFBOARD_STATE == "ATTITUDE_FLU"
+        cmd = VehicleAttitudeSetpoint()
+        cmd.timestamp = self.get_clock_microseconds()
+        cmd.q_d = [msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w]
+        cmd.thrust = msg.linear.x
+        self.cmd = cmd
+
 
     def cmd_callback(self, request, response):
         command = request.command
