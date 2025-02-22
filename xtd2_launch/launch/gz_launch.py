@@ -26,9 +26,8 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(gz_launch_path),
             launch_arguments={
-                'gz_args': [PathJoinSubstitution([pkg_xtdrone2_gz_sim, 'worlds',
-                                                  LaunchConfiguration('world_file')])],
-                'on_exit_shutdown': 'True'
+                'gz_args': ['-r', ' ', PathJoinSubstitution([pkg_xtdrone2_gz_sim, 'worlds', LaunchConfiguration('world_file')])],
+                'on_exit_shutdown': 'True',
             }.items(),
         ),
     ])
