@@ -1,0 +1,3 @@
+[submodule "xtd2_submodules/px4_msgs"]
+	path = xtd2_submodules/px4_msgs
+	url = https://github.com/PX4/px4_msgs.git
