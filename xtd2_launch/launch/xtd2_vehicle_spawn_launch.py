@@ -63,7 +63,8 @@ def generate_launch_description():
         arguments=[
             "--model", LaunchConfiguration('model'),
             "--id", LaunchConfiguration('id'),
-            "--namespace", LaunchConfiguration('namespace')
+            "--namespace", LaunchConfiguration('namespace'),
+            "--debug", "true"
         ]
     )
 

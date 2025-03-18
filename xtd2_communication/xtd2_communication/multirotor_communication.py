@@ -16,6 +16,7 @@ from std_msgs.msg import String
 from geometry_msgs.msg import Pose, Twist
 from px4_msgs.msg import TrajectorySetpoint, OffboardControlMode, VehicleCommand, VehicleLocalPosition, VehicleGlobalPosition, VehicleAttitudeSetpoint
 from xtd2_msgs.srv import XTD2Cmd
+from xtd2_msgs.msg import XTD2VehicleState
 
 import sys
 import math
@@ -25,13 +26,14 @@ from rclpy.qos import QoSProfile, qos_profile_sensor_data
 import argparse
 
 class MultirotorCommunication(Node):
-    def __init__(self, model, id, namespace=""):
+    def __init__(self, model, id, namespace="", debug=False):
         
         if model.startswith("gz_"):  # 删除gz_前缀
             model = model[3:]
         self.model = model
 
         self.id = int(id)
+        self.debug = debug
 
         self.namespace = namespace if namespace else f'{model}_{id}'
 
@@ -64,6 +66,11 @@ class MultirotorCommunication(Node):
 
         self.timer_ = self.create_timer(0.05, self.timer_callback)
 
+        # Debug publisher for vehicle state
+        if self.debug:
+            self.vehicle_state_publisher = self.create_publisher(XTD2VehicleState, f'/xtdrone2/{self.namespace}/debug/vehicle_state', 10)
+            self.debug_timer = self.create_timer(0.1, self.publish_vehicle_state)  # 10Hz
+
         self.get_logger().info(f'{self.namespace} communication node started')
     
     def timer_callback(self):
@@ -74,6 +81,9 @@ class MultirotorCommunication(Node):
         msg = OffboardControlMode()
         
         # Publish Command
+        if not self.cmd: 
+            return
+        
         self.cmd.timestamp = self.get_clock_microseconds()
         if self.OFFBOARD_STATE in ["POSE_LOCAL_NED", "POSE_LOCAL_FLU"]:
             msg.position = True
@@ -189,14 +199,14 @@ class MultirotorCommunication(Node):
     def cmd_accel_ned_callback(self, msg):
         if self.OFFBOARD_STATE == "DISABLED":
             return
-        
-        self.OFFBOARD_STATE == "ACCEL_NED"
+
+        self.OFFBOARD_STATE = "ACCEL_NED"
         cmd = TrajectorySetpoint()
         cmd.timestamp = self.get_clock_microseconds()
         cmd.position = [math.nan, math.nan, math.nan]
         cmd.velocity = [math.nan, math.nan, math.nan]
         cmd.acceleration = [msg.linear.x, msg.linear.y, msg.linear.z]
-        # How about yaw?
+        #TODO: How about yaw?
         self.cmd = cmd
         
     def cmd_accel_flu_callback(self, msg):
@@ -222,7 +232,7 @@ class MultirotorCommunication(Node):
         if self.OFFBOARD_STATE == "DISABLED":
             return
         
-        self.OFFBOARD_STATE == "ATTITUDE_FLU"
+        self.OFFBOARD_STATE = "ATTITUDE_FLU"
         cmd = VehicleAttitudeSetpoint()
         cmd.timestamp = self.get_clock_microseconds()
         cmd.q_d = [msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w]
@@ -318,6 +328,60 @@ class MultirotorCommunication(Node):
         self.publish_vehicle_command(VehicleCommand.VEHICLE_CMD_NAV_RETURN_TO_LAUNCH)
         self.get_logger().info("RTL command send.")
 
+    def publish_vehicle_state(self):
+        if not self.debug:
+            return
+            
+        msg = XTD2VehicleState()
+        msg.timestamp = self.get_clock_microseconds()
+        msg.offboard_state = self.OFFBOARD_STATE
+
+        # 当前位置信息
+        if self.cur_vehicle_local_position is not None:
+            msg.x = self.cur_vehicle_local_position.x
+            msg.y = self.cur_vehicle_local_position.y
+            msg.z = self.cur_vehicle_local_position.z
+            msg.heading = self.cur_vehicle_local_position.heading
+        else:
+            msg.x = float('nan')
+            msg.y = float('nan')
+            msg.z = float('nan')
+            msg.heading = float('nan')
+
+        # 全局位置信息
+        if self.cur_vehicle_global_position is not None:
+            msg.lat = self.cur_vehicle_global_position.lat
+            msg.lon = self.cur_vehicle_global_position.lon
+            msg.alt = self.cur_vehicle_global_position.alt
+        else:
+            msg.lat = float('nan')
+            msg.lon = float('nan')
+            msg.alt = float('nan')
+
+        # 初始位置信息
+        if self.init_vehicle_local_position is not None:
+            msg.init_x = self.init_vehicle_local_position.x
+            msg.init_y = self.init_vehicle_local_position.y
+            msg.init_z = self.init_vehicle_local_position.z
+            msg.init_heading = self.init_vehicle_local_position.heading
+        else:
+            msg.init_x = float('nan')
+            msg.init_y = float('nan')
+            msg.init_z = float('nan')
+            msg.init_heading = float('nan')
+
+        # 初始全局位置信息
+        if self.init_vehicle_global_position is not None:
+            msg.init_lat = self.init_vehicle_global_position.lat
+            msg.init_lon = self.init_vehicle_global_position.lon
+            msg.init_alt = self.init_vehicle_global_position.alt
+        else:
+            msg.init_lat = float('nan')
+            msg.init_lon = float('nan')
+            msg.init_alt = float('nan')
+
+        self.vehicle_state_publisher.publish(msg)
+
 def main():
     rclpy.init(args=sys.argv)
 
@@ -326,10 +390,11 @@ def main():
     parser.add_argument('--model', type=str, help='Vehicle type', required=True)
     parser.add_argument('--id', type=int, help='Vehicle id, should be unique in same model', required=True)
     parser.add_argument('--namespace', type=str, help='ROS namespace, {{model}}_{{id}} by default', required=False, default="")
+    parser.add_argument('--debug', action='store_true', help='Enable debug mode to publish vehicle state', required=False, default=False)
 
     args, unknown = parser.parse_known_args()
 
-    multirotor_communication = MultirotorCommunication(args.model, args.id, args.namespace)
+    multirotor_communication = MultirotorCommunication(args.model, args.id, args.namespace, args.debug)
     rclpy.spin(multirotor_communication)
     multirotor_communication.destroy_node()
     rclpy.shutdown()
