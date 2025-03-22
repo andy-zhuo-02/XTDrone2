@@ -1,3 +1,7 @@
 [submodule "xtd2_third_party_pkgs/px4_msgs"]
 	path = xtd2_third_party_pkgs/px4_msgs
 	url = https://github.com/PX4/px4_msgs.git
+[submodule "ego-planner-swarm"]
+	path = xtd2_third_party_pkgs/motion_planning/ego-planner-swarm
+	url = https://github.com/andy-zhuo-02/ego-planner-swarm.git
+	branch = ros2_version
