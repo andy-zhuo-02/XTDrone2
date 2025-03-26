@@ -50,7 +50,8 @@ def generate_launch_description():
         output='screen',
         arguments=[
             "--ros_ns", LaunchConfiguration('namespace'),
-            "--gz_ns", LaunchConfiguration('namespace')
+            "--gz_ns", LaunchConfiguration('namespace'),
+            "--worldname", LaunchConfiguration('world_name')
         ]
     )
 

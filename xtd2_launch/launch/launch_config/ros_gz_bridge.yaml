@@ -1,3 +1,9 @@
+# Bridge communication between ROS and Gazebo
+# https://github.com/gazebosim/ros_gz/blob/ros2/ros_gz_bridge/README.md
+
+#######################
+# Gazebo Ground Truth #
+#######################
 - ros_topic_name: "${ros_ns}/pose"
   gz_topic_name: "/model/${gz_ns}/pose"
   ros_type_name: "geometry_msgs/msg/PoseArray"
@@ -5,9 +11,40 @@
   lazy: true
   direction: GZ_TO_ROS
 
-- ros_topic_name: "${ros_ns}/odometry"
-  gz_topic_name: "/model/${gz_ns}/odometry"
-  ros_type_name: "nav_msgs/msg/Odometry"
-  gz_type_name: "gz.msgs.Odometry"
+###########################
+# Depth Camera: OakD-Lite #
+###########################
+- ros_topic_name: "${ros_ns}/IMX214/camera_info"
+  gz_topic_name: /world/${worldname}/model/${gz_ns}/link/OakD-Lite/base_link/sensor/IMX214/camera_info
+  ros_type_name: "sensor_msgs/msg/CameraInfo"
+  gz_type_name: "gz.msgs.CameraInfo"
+  lazy: true
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "${ros_ns}/IMX214/image_raw"
+  gz_topic_name: /world/${worldname}/model/${gz_ns}/link/OakD-Lite/base_link/sensor/IMX214/image
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  lazy: true
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "${ros_ns}/StereoOV7251/camera_info"
+  gz_topic_name: /world/${worldname}/model/${gz_ns}/link/OakD-Lite/base_link/sensor/StereoOV7251/camera_info
+  ros_type_name: "sensor_msgs/msg/CameraInfo"
+  gz_type_name: "gz.msgs.CameraInfo"
+  lazy: true
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "${ros_ns}/StereoOV7251/image_raw"
+  gz_topic_name: /world/${worldname}/model/${gz_ns}/link/OakD-Lite/base_link/sensor/StereoOV7251/depth_image
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  lazy: true
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "${ros_ns}/StereoOV7251/pointcloud"
+  gz_topic_name: /world/${worldname}/model/${gz_ns}/link/OakD-Lite/base_link/sensor/StereoOV7251/depth_image/points
+  ros_type_name: "sensor_msgs/msg/PointCloud2"
+  gz_type_name: "gz.msgs.PointCloudPacked"
   lazy: true
   direction: GZ_TO_ROS

@@ -13,6 +13,7 @@ def main():
 
     parser.add_argument('--ros_ns', type=str, help='ROS namespace', required=True)
     parser.add_argument('--gz_ns', type=str, help='Gazebo namespace', required=True)
+    parser.add_argument('--worldname', type=str, help='World name', required=True)
 
     args, unknown = parser.parse_known_args()
 
@@ -21,7 +22,7 @@ def main():
     yaml_tmp_output = os.path.join(FindPackageShare("xtd2_launch").find('xtd2_launch'), 'launch', 'launch_config', f'tmp_ros_gz_bridge_{args.ros_ns}.yaml')
     with open(yaml_template, 'r') as file:
         yaml_template_content = file.read()
-    template = Template(yaml_template_content).safe_substitute({'gz_ns': args.gz_ns, 'ros_ns': args.ros_ns})
+    template = Template(yaml_template_content).safe_substitute({'gz_ns': args.gz_ns, 'ros_ns': args.ros_ns, 'worldname': args.worldname})
     with open(yaml_tmp_output, 'w') as file:
         yaml.safe_dump(yaml.safe_load(template), file)
 

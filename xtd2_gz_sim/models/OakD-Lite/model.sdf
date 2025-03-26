@@ -50,7 +50,7 @@
         <always_on>1</always_on>
         <update_rate>30</update_rate>
         <visualize>true</visualize>
-        <topic>camera</topic>
+        <!-- <topic>camera</topic> -->
       </sensor>
       <sensor name="StereoOV7251" type="depth_camera">
         <pose>0.01233 -0.03 .01878 0 0 0</pose>
@@ -69,7 +69,7 @@
         <always_on>1</always_on>
         <update_rate>30</update_rate>
         <visualize>true</visualize>
-        <topic>depth_camera</topic>
+        <!-- <topic>depth_camera</topic> -->
       </sensor>
       <gravity>true</gravity>
       <velocity_decay/>
