@@ -51,9 +51,9 @@ def generate_launch_description():
             ]),
             launch_arguments={
                 'world_name': LaunchConfiguration('world_name'),
-                'model': 'gz_x500',
+                'model': 'r1_rover',
                 'id': '0',
-                'namespace': 'x500_0',
+                'namespace': 'r1_rover_0',
             }.items()
         )
 

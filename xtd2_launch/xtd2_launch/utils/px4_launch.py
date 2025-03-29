@@ -18,7 +18,12 @@ def main():
 
     args, unknown = parser.parse_known_args()
 
-    autostart_map = {"gz_x500": 4001, "gz_x500_depth":4002}
+    autostart_map = {
+        "gz_x500": 4001, 
+        "gz_x500_depth":4002,
+        "r1_rover": 4009,
+        }
+    
     sys_autostart = autostart_map[args.model]
 
     mav_sys_id = args.id + 1
