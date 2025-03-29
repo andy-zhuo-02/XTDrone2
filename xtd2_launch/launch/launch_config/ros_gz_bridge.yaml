@@ -11,6 +11,13 @@
   lazy: true
   direction: GZ_TO_ROS
 
+- ros_topic_name: "${ros_ns}/odometry"
+  gz_topic_name: "/model/${gz_ns}/odometry"
+  ros_type_name: "nav_msgs/msg/Odometry"
+  gz_type_name: "gz.msgs.Odometry"
+  lazy: true
+  direction: GZ_TO_ROS
+
 ###########################
 # Depth Camera: OakD-Lite #
 ###########################
