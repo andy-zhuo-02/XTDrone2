@@ -1,3 +1,7 @@
 [submodule "xtd2_third_party_pkgs/px4_msgs"]
 	path = xtd2_third_party_pkgs/px4_msgs
 	url = https://github.com/PX4/px4_msgs.git
+	
+[submodule "docs/wiki"]
+	path = docs/wiki
+	url = https://github.com/andy-zhuo-02/XTDrone2.wiki.git
