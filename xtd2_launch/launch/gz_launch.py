@@ -1,3 +1,18 @@
+"""
+XTDrone2 Gazebo Launch File
+
+Author: Andy Zhuo
+Email: zhuoan@stu.pku.edu.cn
+
+Copyright (c) 2025 XTDrone2
+
+This file is part of XTDrone2. XTDrone2 is free software: you can redistribute it
+and/or modify it under the terms of the MIT License.
+
+You should have received a copy of the MIT License along with XTDrone2. If not,
+see <https://opensource.org/licenses/MIT>.
+"""
+
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import (DeclareLaunchArgument, SetEnvironmentVariable,

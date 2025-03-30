@@ -12,6 +12,10 @@ XTDrone2是基于PX4、ROS2与Gazebo Ignition的无人机通用仿真平台。
 
 详细内容参见[XTDrone2安装教程](https://www.yuque.com/xtdrone/xtdrone2/tutorial)
 
+## 开源协议
+
+本项目采用 MIT 开源协议。详见 [LICENSE](LICENSE) 文件。
+
 ## 项目团队
 
 ## 贡献者

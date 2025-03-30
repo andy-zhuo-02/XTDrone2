@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """
 Multirotor Keyboard Control Module
 
@@ -5,9 +8,13 @@ This module provides keyboard control for multirotor.
 
 Author: Andy Zhuo
 Email: zhuoan@stu.pku.edu.cn
-Copyright (c) 2023 XTDrone2
+
+Copyright (c) 2025 XTDrone2
 
 All rights reserved. This code is licensed under the MIT License.
+
+You should have received a copy of the MIT License along with XTDrone2. If not,
+see <https://opensource.org/licenses/MIT>.
 """
 
 import rclpy

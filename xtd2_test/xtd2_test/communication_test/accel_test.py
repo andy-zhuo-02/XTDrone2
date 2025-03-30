@@ -1,3 +1,18 @@
+"""
+XTDrone2 Acceleration Test Node
+
+Author: Andy Zhuo
+Email: zhuoan@stu.pku.edu.cn
+
+Copyright (c) 2025 XTDrone2
+
+This file is part of XTDrone2. XTDrone2 is free software: you can redistribute it
+and/or modify it under the terms of the MIT License.
+
+You should have received a copy of the MIT License along with XTDrone2. If not,
+see <https://opensource.org/licenses/MIT>.
+"""
+
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
