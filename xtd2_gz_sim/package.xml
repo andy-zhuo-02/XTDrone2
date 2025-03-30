@@ -3,9 +3,12 @@
 <package format="3">
   <name>xtd2_gz_sim</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>XTDrone2 Gazebo simulation package</description>
   <maintainer email="139300141+ha0xin@users.noreply.github.com">haoxin</maintainer>
-  <license>TODO: License declaration</license>
+  <license>MIT</license>
+
+  <depend>ros_gz_sim</depend>
+  <depend>ros_gz_bridge</depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

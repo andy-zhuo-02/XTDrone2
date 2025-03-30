@@ -3,9 +3,19 @@
 <package format="3">
   <name>xtd2_launch</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="zhuoan@stu.pku.edu.cn">andy-station-ubuntu-24</maintainer>
-  <license>TODO: License declaration</license>
+  <description>XTDrone2 launch files</description>
+  <maintainer email="zhuoan@stu.pku.edu.cn">Andy Zhuo</maintainer>
+  <license>MIT</license>
+
+  <depend>rclpy</depend>
+  <depend>launch</depend>
+  <depend>launch_ros</depend>
+  <depend>ros_gz_sim</depend>
+  <depend>ros_gz_bridge</depend>
+  <depend>xtd2_control</depend>
+  <depend>xtd2_communication</depend>
+  <depend>xtd2_gz_sim</depend>
+  <depend>xtd2_msgs</depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

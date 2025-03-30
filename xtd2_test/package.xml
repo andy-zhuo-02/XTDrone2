@@ -3,9 +3,9 @@
 <package format="3">
   <name>xtd2_test</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="zhuoan@stu.pku.edu.cn">andy-station-ubuntu-24</maintainer>
-  <license>TODO: License declaration</license>
+  <description>XTDrone2 test package</description>
+  <maintainer email="zhuoan@stu.pku.edu.cn">Andy Zhuo</maintainer>
+  <license>MIT</license>
 
   <depend>rclpy</depend>
   <depend>std_msgs</depend>

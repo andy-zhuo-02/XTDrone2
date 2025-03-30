@@ -3,14 +3,16 @@
 <package format="3">
   <name>xtdrone2</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="zhuoan@stu.pku.edu.cn">andy-station-ubuntu-24</maintainer>
-  <license>TODO: License declaration</license>
+  <description>XTDrone2 package</description>
+  <maintainer email="zhuoan@stu.pku.edu.cn">Andy Zhuo</maintainer>
+  <license>MIT</license>
 
   <exec_depend>xtd2_msgs</exec_depend>
   <exec_depend>xtd2_communication</exec_depend>
   <exec_depend>xtd2_control</exec_depend>
   <exec_depend>xtd2_launch</exec_depend>
+  <exec_depend>xtd2_test</exec_depend>
+  <exec_depend>xtd2_gz_sim</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
