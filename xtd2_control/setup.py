@@ -21,6 +21,7 @@ setup(
     entry_points={
         'console_scripts': [
             'multirotor_keyboard_control = xtd2_control.keyboard.multirotor_keyboard_control:main',
+            'rover_keyboard_control = xtd2_control.keyboard.rover_keyboard_control:main',
         ],
     },
 )

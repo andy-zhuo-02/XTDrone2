@@ -8,9 +8,9 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
     world_name_arg = DeclareLaunchArgument('world_name', default_value='aruco', description='Name of the world to launch (without .sdf)')
-    model_name_arg = DeclareLaunchArgument('model_name', default_value='gz_x500', description='Name of the model to spawn')
+    model_name_arg = DeclareLaunchArgument('model_name', default_value='r1_rover', description='Name of the model to spawn')
     id_arg = DeclareLaunchArgument('id', default_value='0', description='ID of the model to spawn')
-    name_space_arg = DeclareLaunchArgument('namespace', default_value='x500_0', description='ROS namespace for the model')
+    name_space_arg = DeclareLaunchArgument('namespace', default_value='r1_rover', description='ROS namespace for the model')
     
     #####################
     # Gazebo Simulation #
@@ -51,7 +51,7 @@ def generate_launch_description():
             ]),
             launch_arguments={
                 'world_name': LaunchConfiguration('world_name'),
-                'model': 'r1_rover',
+                'model': LaunchConfiguration('model_name'),
                 'id': '0',
                 'namespace': 'r1_rover_0',
             }.items()
